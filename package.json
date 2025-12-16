@@ -1,0 +1,25 @@
+{
+  "name": "nodefullstack",
+  "version": "1.0.0",
+  "description": "jwt node react",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minhhieunguyen268/nodefullstack.git"
+  },
+  "author": "minhhieuenter",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/minhhieunguyen268/nodefullstack/issues"
+  },
+  "homepage": "https://github.com/minhhieunguyen268/nodefullstack#readme",
+  "dependencies": {
+    "body-parser": "1.19.1",
+    "dotenv": "10.0.0",
+    "ejs": "3.1.6",
+    "express": "4.17.2"
+  }
+}
