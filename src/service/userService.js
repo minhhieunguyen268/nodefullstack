@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import mysql from "mysql2/promise";
 import bluebird from "bluebird";
+import db from "../models/index.js";
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -19,15 +20,16 @@ const hashUserPassword = (uesrPassword) => {
 const createNewUser = async (email, password, username) => {
   const hashPass = hashUserPassword(password);
 
-   await connection.execute(
-    "INSERT INTO users (email, password, username) VALUES (?, ?, ?)",
-    [email, hashPass, username]
-  );
+  await db.User.create({
+    email,
+    password: hashPass,
+    username,
+  });
 };
 
 const getUserList = async () => {
   try {
-    const [rows, fields] = await connection.execute("Select * from users");
+    const [rows, fields] = await connection.execute("Select * from user");
     return rows;
   } catch (error) {
     console.log(">>>check error ", error);
@@ -35,23 +37,20 @@ const getUserList = async () => {
 };
 
 const deleteUser = async (id) => {
-    await connection.execute(
-    "DELETE FROM users WHERE id = ?",
-    [id]
-  );
-}
+  await connection.execute("DELETE FROM user WHERE id = ?", [id]);
+};
 
 const getUserById = async (id) => {
-    const [rows, fields] = await connection.execute(
-    "SELECT * FROM users WHERE id = ?",
-    [id] );
-    return rows[0];
-}
+  const [rows, fields] = await connection.execute(
+    "SELECT * FROM user WHERE id = ?",
+    [id]
+  );
+  return rows[0];
+};
 
 const updateUser = async (email, username, id) => {
-
-   await connection.execute(
-    "UPDATE users SET email = ?, username = ? WHERE id = ?",
+  await connection.execute(
+    "UPDATE user SET email = ?, username = ? WHERE id = ?",
     [email, username, id]
   );
 };

@@ -10,12 +10,12 @@ const handleUserPage = async (req, res) => {
   return res.render("user.ejs", { userList });
 };
 
-const handleCreateNewUser = (req, res) => {
+const handleCreateNewUser = async (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   let username = req.body.username;
 
-  userService.createNewUser(email, password, username);
+  await userService.createNewUser(email, password, username);
   //   let check = bcrypt.compareSync(password, hashPassword);
 
   return res.redirect("/user");
