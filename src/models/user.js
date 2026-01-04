@@ -8,13 +8,18 @@ export default (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      User.belongsTo(models.Group, { foreignKey: 'groupId' });
+      User.belongsToMany(models.Project, { through: 'Project_User'});
     }
   };
   User.init({
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    username: DataTypes.STRING
+    username: DataTypes.STRING,
+    address: DataTypes.STRING,
+    sex: DataTypes.STRING,
+    phoneNumber: DataTypes.STRING,
+    groupId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'User',

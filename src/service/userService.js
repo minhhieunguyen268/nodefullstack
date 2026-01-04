@@ -1,64 +1,56 @@
 import bcrypt from "bcryptjs";
-import mysql from "mysql2/promise";
-import bluebird from "bluebird";
 import db from "../models/index.js";
 
 const salt = bcrypt.genSaltSync(10);
 
-const connection = await mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  database: "jwt",
-  Promise: bluebird,
-});
-
-const hashUserPassword = (uesrPassword) => {
-  const hashPassword = bcrypt.hashSync(uesrPassword, salt);
-  return hashPassword;
+const hashUserPassword = (password) => {
+  return bcrypt.hashSync(password, salt);
 };
 
+// ================= CREATE =================
 const createNewUser = async (email, password, username) => {
   const hashPass = hashUserPassword(password);
 
-  await db.User.create({
+  return await db.User.create({
     email,
     password: hashPass,
     username,
   });
 };
 
+// ================= READ =================
 const getUserList = async () => {
-  try {
-    const [rows, fields] = await connection.execute("Select * from user");
-    return rows;
-  } catch (error) {
-    console.log(">>>check error ", error);
-  }
-};
-
-const deleteUser = async (id) => {
-  await connection.execute("DELETE FROM user WHERE id = ?", [id]);
+  return await db.User.findAll({
+    raw: true, // trả về object thuần
+  });
 };
 
 const getUserById = async (id) => {
-  const [rows, fields] = await connection.execute(
-    "SELECT * FROM user WHERE id = ?",
-    [id]
-  );
-  return rows[0];
+  return await db.User.findOne({
+    where: { id },
+    raw: true,
+  });
 };
 
+// ================= UPDATE =================
 const updateUser = async (email, username, id) => {
-  await connection.execute(
-    "UPDATE user SET email = ?, username = ? WHERE id = ?",
-    [email, username, id]
+  return await db.User.update(
+    { email, username },
+    { where: { id } }
   );
+};
+
+// ================= DELETE =================
+const deleteUser = async (id) => {
+  return await db.User.destroy({
+    where: { id },
+  });
 };
 
 export default {
   createNewUser,
   getUserList,
-  deleteUser,
   getUserById,
   updateUser,
+  deleteUser,
 };
