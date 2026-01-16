@@ -4,11 +4,15 @@ import userController from '../controller/userController.js'
 import groupController from '../controller/groupController.js'
 const router = express.Router();
 
+const testMiddleware = (req, res, next) => {
+    console.log("call middleware");
+    next();
+}
 
 const initApiRoutes = (app) => {
   router.get("/test-api", apiController.testApi);
   router.post("/register", apiController.handleRegister);
-  router.post("/login", apiController.handleLogin);
+  router.post("/login", testMiddleware, apiController.handleLogin);
 
   router.get("/user/show", userController.handleGetAllUsers);
   router.post("/user/create", userController.handleCreateNewUser);

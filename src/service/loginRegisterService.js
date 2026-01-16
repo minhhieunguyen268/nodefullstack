@@ -1,5 +1,9 @@
 import bcrypt from "bcryptjs";
 import db from "../models/index.js";
+import { getGroupWithRoles } from "./JWTService.js";
+import { createJWT } from "../middleware/JWTAction.js";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -9,7 +13,7 @@ const hashUserPassword = (password) => {
 
 const checkPassword = (password, hashPassword) => {
   return bcrypt.compareSync(password, hashPassword);
-}
+};
 
 const checkEmailExist = async (userEmail) => {
   let isExist = await db.User.findOne({
@@ -51,6 +55,7 @@ const registerNewUser = async (userData) => {
       password: hashPass,
       phoneNumber: userData.phoneNumber,
       username: userData.username,
+      groupId: 4,
     });
 
     return { EM: "Register successs!", EC: "0", DT: "" };
@@ -73,19 +78,34 @@ const handleUserLogin = async (rawData) => {
     }
 
     let user = await db.User.findOne({
-      where: checkEmail ? { email: rawData.valueLogin } : { phoneNumber: rawData.valueLogin },
+      where: checkEmail
+        ? { email: rawData.valueLogin }
+        : { phoneNumber: rawData.valueLogin },
       raw: true,
     });
 
     if (user) {
       let isCorrectPassword = checkPassword(rawData.password, user.password);
       if (isCorrectPassword) {
-        return { EM: "Login success!", EC: "0", DT: user };
+        const groupWithRoles = await getGroupWithRoles(user);
+        let payload = {
+          email: user.email,
+          groupWithRoles,
+          expiresIn: process.env.JWT_EXPIRES_IN
+        }
+        let token = createJWT(payload);
+        return {
+          EM: "Login success!",
+          EC: "0",
+          DT: {
+            access_token: token,
+            groupWithRoles
+          },
+        };
       } else {
         return { EM: "Your password is incorrect!", EC: "1", DT: "" };
       }
     }
-
   } catch (error) {
     return { EM: "Error from server!", EC: "-1", DT: "" };
   }

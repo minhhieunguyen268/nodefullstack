@@ -6,6 +6,12 @@ const handleHelloWord = (req, res) => {
 };
 
 const handleUserPage = async (req, res) => {
+
+  // Cookies that have not been signed
+  console.log('Cookies: ', req.cookies)
+
+  // Cookies that have been signed
+  console.log('Signed Cookies: ', req.signedCookies)
   let userList = await userService.getUserList();
   return res.render("user.ejs", { userList });
 };

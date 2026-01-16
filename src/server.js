@@ -5,23 +5,28 @@ import initApiRoutes from "./routes/api.js";
 import dotenv from "dotenv";
 import cors from "./config/cors.js";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 // import connection from "./config/connectDB.js";
+// import { createJWT, verifyToken } from './middleware/JWTAction.js'
 
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8081;
 
-
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//config cookieParser
+app.use(cookieParser())
 
 cors(app);
 
 configViewEngine(app);
 initWebRoutes(app);
 initApiRoutes(app);
+
+
 
 // connection();
 
